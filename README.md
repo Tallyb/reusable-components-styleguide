@@ -1,8 +1,8 @@
 # Reusable Components Styleguide
 
-Tips and tricks for making components shareable across different projects (framework agnostic)
+__Tips and tricks for making components shareable across different projects (framework agnostic).__
 
-Components are now the most popular method of developing frontend applications. The popular frameworks and browsers themselves support splitting applications to individual components. 
+Components are now the most popular method of developing frontend applications. The popular frameworks and browsers themselves support splitting applications to individual components.  
 Components let you split your UI into independent, reusable pieces, and think about each piece in isolation.  
 
 ![tweet](images/trek_tweet.png)
@@ -14,10 +14,19 @@ During this period, I have seen components developed by many different teams and
 
 **Table of Contents**
 
+- [Reusable Components Styleguide](#reusable-components-styleguide)
   - [Directory Structure](#directory-structure)
     - [One component -> One directory](#one-component---one-directory)
     - [Use Aliases](#use-aliases)
   - [APIs](#apis)
+    - [Use Enums](#use-enums)
+    - [Set Defaults](#set-defaults)
+  - [Globals](#globals)
+    - [Do not rely on global variables](#do-not-rely-on-global-variables)
+    - [Provide fallbacks to globals](#provide-fallbacks-to-globals)
+  - [NPM Packages](#npm-packages)
+    - [Ensure versions compatibility](#ensure-versions-compatibility)
+    - [Minimize packages](#minimize-packages)
 
 ## Directory Structure
 
@@ -170,8 +179,101 @@ window.someGlobal()
 ```
 
 ❔**Why?**
-
 Fallbacks let the consuming application a way to build the application in a manner that is less coupled to the way the provider application. It also does not assumes that the global was set at the time it is consumed.  
 
+## NPM Packages
 
+Our code relies on third-party libraries for providing specific functionalities, such as scrolling, charting, animations, and more. Third-party libraries are important but take care when adding them.
 
+### Ensure versions compatibility
+
+✅ _Do_: Define packages that are likely to exist in the consuming app as peerDependency with relaxed versioning.  
+
+"peerDependencies": {
+    "my-lib": ">=1.0.0"
+}
+
+❌ _Avoid_: specifying very strict version as dependency
+
+"dependencies": {
+    "my-lib": "1.0.0"
+}
+
+❔**Why?**
+To understand the problem, let's understand how package managers resolve dependencies. Assume we have two libraries with the following package.json files: 
+
+```json
+{
+  "name": "library-a",
+  "version": "1.0.0",
+  "dependencies": {
+    "library-b": "^1.0.0",
+    "library-c": "^1.0.0"
+  }
+}
+
+{
+  "name": "library-b",
+  "version": "1.0.0",
+  "dependencies": {
+    "library-c": "^2.0.0"
+  }
+}
+```
+
+The resulting node_modules tree will look as follow:  
+
+```bash
+- library-a/
+  - node_modules/
+    - library-c/
+      - package.json <-- library-c@1.0.0
+    - library-b/
+      - package.json
+      - node_modules/
+        - library-c/
+          - package.json <-- library-c@2.0.0
+```
+
+You can see that library-c is installed twice with two separate versions. In some cases, such as with React or Angular frameworks, this can even cause errors. However, if the configuration is kept as follow:  
+
+```json
+{
+  "name": "library-a",
+  "version": "1.0.0",
+  "dependencies": {
+    "library-b": "^1.0.0",
+  },
+  "peerDependencies": {
+    "library-c": ">=1.0.0"
+  },
+}
+
+{
+  "name": "library-b",
+  "version": "1.0.0",
+  "dependencies": {
+    "library-c": "^2.0.0"
+  }
+}
+```
+
+library-c is only installed once:
+
+```bash
+- library-a/
+  - node_modules/
+    - library-c/
+      - package.json <-- library-c2@.0.0
+    - library-b/
+      - package.json
+```
+
+### Minimize packages
+
+✅ _Do_: Revise package.json dependencies often to make sure they are all in use. Prefer language features over packages (e.g. lodash vs. built it functions).  
+
+❌ _Avoid_: Using functionality duplicated across multiple packages.  
+
+❔**Why?**
+When reusing code, you also need to reuse the packages that use it. Relying on multiple packages makes it hard to move components between applications, but also increase bundle size for all the component consumers. 

@@ -32,6 +32,7 @@ During this period, I have seen components developed by many different teams and
     - [Restrict styles with themes](#restrict-styles-with-themes)
     - [CSS Variables as theming variables](#css-variables-as-theming-variables)
   - [State Management](#state-management)
+    - [Decouple data and layout](#decouple-data-and-layout)
 
 ## Directory Structure
 
@@ -345,6 +346,10 @@ Component producer need to control the functionality and the behavior of the com
 CSS variables are framework independent and are supported by the browser. Also, CSS variables provide great flexibility as they can be scoped to different components.  
 
 ## State Management
+
+Components may use state managers such as Redux, MobX, React Context, or VueX. State managers tend to be contextual and global. When reusing components between applications the consuming applications must have the same global context as the original one.  
+
+### Decouple data and layout
 
 ✅ _Do_: Separate presentational and container components. In most cases the data is specific to the consuming application. Component producers should provide presentational component only with APIs to get the data from a wrapping component that is managing data and state.  
 

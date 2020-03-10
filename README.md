@@ -27,6 +27,11 @@ During this period, I have seen components developed by many different teams and
   - [NPM Packages](#npm-packages)
     - [Ensure versions compatibility](#ensure-versions-compatibility)
     - [Minimize packages](#minimize-packages)
+  - [Styling](#styling)
+    - [Scope styles to component](#scope-styles-to-component)
+    - [Restrict styles with themes](#restrict-styles-with-themes)
+    - [CSS Variables as theming variables](#css-variables-as-theming-variables)
+  - [State Management](#state-management)
 
 ## Directory Structure
 
@@ -64,7 +69,7 @@ Consumer - Ensure you get all parts of the component when consuming it
 4 directories, 5 files
 ```  
 
-❔**Why?**
+❔**Why?**  
 Placing all the files related to a component makes it easier to reason about the items that are interconnected. File references are becoming shorter and easier to find the referenced item. Shorter file references make it easy to move the component to different directories. A typical reference pattern is:  
 style <- code <- story <- test
 The component code is importing the component's style (CSS or JS in CSS style). A story (supporting CSF format) is importing the code to build the story. And the test is importing and instancing a story to validate functionality. (It is also totally ok for the test is directly importing the code).  
@@ -132,8 +137,7 @@ defaultProps = {
 
 ❌ _Avoid_: Making parameters required and expect user to fill in values for all of them.
 
-❔**Why?**
-
+❔**Why?**  
 Setting parameters makes it easy for the consumer to start using the component, rather than find fair values for all parameters. Once incorporating the component, tweaking it to the exact need is more tranquil. 
 
 ## Globals
@@ -156,8 +160,7 @@ export const Card = ({ title, paragraph, someGlobal }: CardProps) =>
 
 Components may rely on globals, such as window.someGlobal, assuming that the global variable already exists.  
 
-❔**Why?**
-
+❔**Why?**  
 Relying on parameters gives the consuming application greater flexibility in using the components and does not require it to adhere to the same structure that exists in the producing application.
 
 ### Provide fallbacks to globals
@@ -178,7 +181,7 @@ if (typeof window.someGlobal === 'function') {
 window.someGlobal()
 ```
 
-❔**Why?**
+❔**Why?**  
 Fallbacks let the consuming application a way to build the application in a manner that is less coupled to the way the provider application. It also does not assumes that the global was set at the time it is consumed.  
 
 ## NPM Packages
@@ -199,8 +202,8 @@ Our code relies on third-party libraries for providing specific functionalities,
     "my-lib": "1.0.0"
 }
 
-❔**Why?**
-To understand the problem, let's understand how package managers resolve dependencies. Assume we have two libraries with the following package.json files: 
+❔**Why?**  
+To understand the problem, let's understand how package managers resolve dependencies. Assume we have two libraries with the following package.json files:  
 
 ```json
 {
@@ -269,11 +272,135 @@ library-c is only installed once:
       - package.json
 ```
 
+Also, make sure the peer dependency has very loose versioning. Why? When installing packages, both NPM and Yarn flatten the dependency tree as much as possible. So let's say we have packages A and B. They both need package C but with different versions — say 1.1.0 and 1.2.0. NPM and Yarn will obey the requirement and install both versions of C under A and B. However, if A and B require C in version ">1.0.0", C is only installed once with the latest version.
+
 ### Minimize packages
 
 ✅ _Do_: Revise package.json dependencies often to make sure they are all in use. Prefer language features over packages (e.g. lodash vs. built it functions).  
 
 ❌ _Avoid_: Using functionality duplicated across multiple packages.  
 
-❔**Why?**
-When reusing code, you also need to reuse the packages that use it. Relying on multiple packages makes it hard to move components between applications, but also increase bundle size for all the component consumers. 
+❔**Why?**  
+When reusing code, you also need to reuse the packages that use it. Relying on multiple packages makes it hard to move components between applications, but also increase bundle size for all the component consumers.  
+
+## Styling
+
+By design, CSS is global and cascading without any module system or encapsulation.  
+
+### Scope styles to component
+
+✅ _Do_: Use a CSS mechanism that scope the style to the component. In React the popular css-in-js frameworks such as [Emotion](https://github.com/emotion-js/emotion), [Styled Components](https://github.com/styled-components/styled-components) and [JSS](https://github.com/cssinjs/jss) are famous. Vue is supporting scoped styled [out of the box](https://vue-loader.vuejs.org/guide/scoped-css.html). Angular also has scoped styles built in with the [viewEncapsulation property](https://angular.io/api/core/ViewEncapsulation). CSS is scoped in web components via the [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
+
+❌ _Avoid_: Rely on application level styles in components.
+
+❔**Why?**  
+When reusing components across different apps the application level styles are likely to change. Relying on global styles can break styling. Encapsulating all style inside the component ensures it looks the same even when transported between applications.  
+
+### Restrict styles with themes
+
+✅ _Do_: Use themes to control the properties that you want to expose in your components.  
+
+```ts
+class ThemeProvider extends React.Component {
+  render() {
+    return (
+      <ThemeContext.Provider value={this.props.theme}>
+        {this.props.children}
+      </ThemeContext.Provider>
+    );
+  }
+}
+
+const theme = {
+  colors: {
+    primary: "purple",
+    secondary: "blue",
+    background: "light-grey",
+  }
+};
+```
+
+❌ _Avoid_: Let component consumers override any style property from outside.  
+
+❔**Why?**  
+Component producer need to control the functionality and the behavior of the component. Reducing the levels of freedom for the components consumers can provide a better predictability to the component's behavior, including its visual appearance.
+
+### CSS Variables as theming variables
+
+✅ _Do_: Use CSS variables for enabling theming. See [here](https://blog.logrocket.com/how-to-create-better-themes-with-css-variables-5a3744105c74/) for more details. CSS variables that can be used for theming should be documented as part of the component's APIs. 
+
+```css
+:root {
+  --main-bg-color: fuchsia;
+}
+.button {
+   background: fuchsia;
+   background: var(--main-bg-color, fuchsia);
+}
+```
+
+❌ _Avoid_: Other theming techniques are also valid.
+
+❔**Why?**  
+CSS variables are framework independent and are supported by the browser. Also, CSS variables provide great flexibility as they can be scoped to different components.  
+
+## State Management
+
+✅ _Do_: Separate presentational and container components. In most cases the data is specific to the consuming application. Component producers should provide presentational component only with APIs to get the data from a wrapping component that is managing data and state.  
+
+```ts
+//container component
+import React, { useState } from "react";
+import { Users } from '@src/presentation/users'
+export const UsersContainer = () => {
+  const [users] = useState([
+    { id: "8NaU7k", name: "John" },
+    { id: "Wxxfs1", name: "Jane" }
+  ]);
+
+  return (
+    <Users data="users">
+  );
+};
+
+//presentational component
+export const Users = (props) => {
+  return (
+    <div className="user-list">
+      <ul>
+        {props.data.map(user => (
+          <li key={user.id}>
+            <p>{user.name}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+```
+
+❌ _Avoid_: sharing components that rely on a specific structure of data and enforce the consuming application to provide the data in a very specific format.  
+
+```ts
+//single component that manages both data and presentation
+import React, { useState } from "react";
+
+export const Users = () => {
+  const [users] = useState([
+    { id: "8NaU7k", name: "John" },
+    { id: "Wxxfs1", name: "Jane" }
+  ]);
+
+  return (
+    <div className="user-list">
+      <ul>
+        {users.map(user => (
+          <li key={user.id}>
+            <p>{user.name}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+```

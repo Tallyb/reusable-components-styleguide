@@ -36,12 +36,9 @@ During this period, I have seen components developed by many different teams and
 
 ## Directory Structure
 
-Producer - create a directory structure that is easily consumable
-Consumer - Ensure you get all parts of the component when consuming it
-
 ### One component -> One directory
 
-✅ _Do_: Put all the component related files in a single directory, including component's code, stylings, tests, documentation, storybook stories, and testing snapshots. Sub-components (components that you can only use within the context of another component, such as List and ListItem), can also be included in the same directory.  
+✅ _Do_: Put all the component related files in a single directory, including component's code, stylings, tests, documentation, storybook stories, and testing snapshots. If your components is using sub-components, i.e., components that you can only use within the context of the parent component (List and ListItem or a component and its styled component), it make sense to include them in the same directory. Component consumer is getting all the components packaged together.
 
 ```bash
 ├── Button.spec.tsx
@@ -71,7 +68,7 @@ Consumer - Ensure you get all parts of the component when consuming it
 ```  
 
 ❔**Why?**  
-Placing all the files related to a component makes it easier to reason about the items that are interconnected. File references are becoming shorter and easier to find the referenced item. Shorter file references make it easy to move the component to different directories. A typical reference pattern is:  
+The component produces creates a directory structure that is easily consumable by placing all the related files together. Having all files located in a single directory makes it easier for component consumers to reason about the items that are interconnected. File references are becoming shorter and easier to find the referenced item. Shorter file references make it easy to move the component to different directories. A typical reference pattern is:  
 style <- code <- story <- test
 The component code is importing the component's style (CSS or JS in CSS style). A story (supporting CSF format) is importing the code to build the story. And the test is importing and instancing a story to validate functionality. (It is also totally ok for the test is directly importing the code).  
 
@@ -95,10 +92,7 @@ Webpack, Rollup, and Typescript provide methods for using fixed references inste
 
 ## APIs
 
-Component's APIs are the data attributes it receives and the callbacks it exposes. The general rule is to try and minimize the APIs surface to the necessary minimum.  
-
-Producer - prepare the APIs so they are logical and consistent for consumers to use
-Consumer - receive flexible but simple to use APIs that cover most needs
+Component's APIs are the data attributes it receives and the callbacks it exposes. The general rule is to try and minimize the APIs surface to the necessary minimum. For component producers, this means to prepare the APIs so they are logical and consistent. Component consumers get APIs that are simple to use and reduces the learning curve when using the component. 
 
 ### Use Enums
 

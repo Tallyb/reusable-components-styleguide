@@ -12,9 +12,10 @@ Components let you split your UI into independent, reusable pieces, and think ab
 This series summarizes what I have learned in the last months working as head of Developer Experience at Bit. Bit is a components collaboration tool that helps developers build components in different applications and repositories and share them.  
 During this period, I have seen components developed by many different teams and across different frameworks. The good parts and the bad parts have led me to define some guidelines that can help people build more independent, isolated, and hence reusable components.  
 
-**Table of Contents**
+## Table of Contents
 
 - [Reusable Components Styleguide](#reusable-components-styleguide)
+  - [Table of Contents](#table-of-contents)
   - [Directory Structure](#directory-structure)
     - [One component -> One directory](#one-component---one-directory)
     - [Use Aliases](#use-aliases)
@@ -133,7 +134,7 @@ defaultProps = {
 ❌ _Avoid_: Making parameters required and expect user to fill in values for all of them.
 
 ❔**Why?**  
-Setting parameters makes it easy for the consumer to start using the component, rather than find fair values for all parameters. Once incorporating the component, tweaking it to the exact need is more tranquil. 
+Setting parameters makes it easy for the consumer to start using the component, rather than find fair values for all parameters. Once incorporating the component, tweaking it to the exact need is more tranquil.  
 
 ## Globals
 
@@ -322,7 +323,7 @@ Component producer need to control the functionality and the behavior of the com
 
 ### CSS Variables as theming variables
 
-✅ _Do_: Use CSS variables for enabling theming. See [here](https://blog.logrocket.com/how-to-create-better-themes-with-css-variables-5a3744105c74/) for more details. CSS variables that can be used for theming should be documented as part of the component's APIs. 
+✅ _Do_: Use CSS variables for enabling theming. See [here](https://blog.logrocket.com/how-to-create-better-themes-with-css-variables-5a3744105c74/) for more details. CSS variables that can be used for theming should be documented as part of the component's APIs.  
 
 ```css
 :root {

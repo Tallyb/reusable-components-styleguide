@@ -19,7 +19,7 @@ During this period, I have seen components developed by many different teams and
     - [One component -> One directory](#one-component---one-directory)
     - [Use Aliases](#use-aliases)
   - [APIs](#apis)
-    - [Use Enums](#use-enums)
+    - [Use discrete values](#use-discrete-values)
     - [Set Defaults](#set-defaults)
   - [Globals](#globals)
     - [Do not rely on global variables](#do-not-rely-on-global-variables)
@@ -92,11 +92,11 @@ Webpack, Rollup, and Typescript provide methods for using fixed references inste
 
 ## APIs
 
-Component's APIs are the data attributes it receives and the callbacks it exposes. The general rule is to try and minimize the APIs surface to the necessary minimum. For component producers, this means to prepare the APIs so they are logical and consistent. Component consumers get APIs that are simple to use and reduces the learning curve when using the component. 
+Component's APIs are the data attributes it receives and the callbacks it exposes. The general rule is to try and minimize the APIs surface to the necessary minimum. For component producers, this means to prepare the APIs so they are logical and consistent. Component consumers get APIs that are simple to use and reduces the learning curve when using the component.  
 
-### Use Enums
+### Use discrete values
 
-✅ _Do_: Use Enums instead of multiple booleans
+✅ _Do_: Use discrete values such as Enums or string literals for requiring specific options.
 
 ```ts
 type LocationProps = {

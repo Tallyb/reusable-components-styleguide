@@ -404,3 +404,51 @@ export const Users = () => {
   );
 };
 ```
+
+## Distribution
+
+### Package for distribution
+
+✅ _Do_: Package your components in multiple formats that are supported by the various platforms: 
+CommonJS (or cjs, or sometimes called es5 modules) for nodejs consumption 
+ES Modules (sometimes also referenced as es6 modules), to be consumed by bundlers and enable tree shaking. 
+UMD, for using directly in script tags in the browsers
+Use the package.json fields to direct to the different formats as per this convention:
+
+```json
+# Package.json
+"main": "component.cjs.js"
+"module": "component.es.js"
+"browser": "component.umd.js"
+```
+
+❌ _Avoid_: Assuming the component is consumed in only a specific way:  
+
+❔**Why?**  
+The JS world has a unique trait of a single interpreted language that is running on multiple platforms. Nodejs in various versions and various browsers create a plethora of runtime environments. 
+Despite a continuous shift towards standard module handling, there are still a variety of methods to handle bundled code. 
+During this struggling period and until we get one standard to rule them all, we should be good citizens of the JS-universe by feeding each packaging beast with its favorite flavor.  
+
+For example, Webpack supports the different fields, according to the target it is building for. 
+
+```js
+//webpack.config.js
+
+//When the target property is set to webworker, web, or left unspecified:
+module.exports = {
+  //...
+  resolve: {
+    mainFields: ['browser', 'module', 'main']
+  }
+};
+
+//For any other target (including node):
+
+module.exports = {
+  //...
+  resolve: {
+    mainFields: ['module', 'main']
+  }
+};
+```
+[Read more here](https://v4.webpack.js.org/configuration/resolve/#resolvemainfields)

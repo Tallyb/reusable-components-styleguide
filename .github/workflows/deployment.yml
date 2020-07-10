@@ -7,7 +7,7 @@ on:
 
 env:
   CI: true
-  NODE_OPTIONS: --max-old-space-size=16384
+# NODE_OPTIONS: --max-old-space-size=16384
 
 jobs:
   

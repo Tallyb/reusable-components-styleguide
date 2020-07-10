@@ -7,7 +7,7 @@ on:
 
 env:
   CI: true
-# NODE_OPTIONS: --max-old-space-size=16384
+  NODE_OPTIONS: --max-old-space-size=16384
 
 jobs:
   
@@ -21,7 +21,7 @@ jobs:
           node-version: '14'
 
       - name: start deployment
-        uses: Tallyb/deployments@master
+        uses: bobheadxi/deployments@next
         id: deployment
         with:
           step: start
@@ -31,7 +31,7 @@ jobs:
           transient: true
 
       - name: update deployment status
-        uses: Tallyb/deployments@master
+        uses: bobheadxi/deployments@next
         if: always()
         with:
           step: finish

@@ -359,7 +359,7 @@ export const UsersContainer = () => {
   ]);
 
   return (
-    <Users data="users">
+    <Users data={users}>
   );
 };
 

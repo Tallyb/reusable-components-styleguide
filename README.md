@@ -109,8 +109,8 @@ type LocationProps = {
 
 ```ts
 type LocationProps = {
-  isLeft: string,
-  isTop: string,
+  isLeft: boolean,
+  isTop: boolean,
 }
 ```
 
